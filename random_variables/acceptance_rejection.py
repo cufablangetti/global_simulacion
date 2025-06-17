@@ -44,6 +44,9 @@ class AcceptanceRejectionGenerator:
         chart_y = []
         chart_accepted = []
         
+        chart_x_d = []
+        chart_y_d = []
+        chart_fx_d = []
         accepted_count = 0
         
         
@@ -56,19 +59,22 @@ class AcceptanceRejectionGenerator:
             r2 = random.random()
             r2_values.append(r2)
             
-            x = (self.a) + (self.b - self.a) * r1  
+            vax = (self.a) + (self.b - self.a) * r1  
             
 
-            fx = self.target_density(x)
+            fvax = self.target_density(vax)
             
             
+            chart_x_d.append(vax)
+            chart_y_d.append(r2 * M)
+            chart_fx_d.append(fvax)
             # Datos para el gráfico
             chart_x.append(i + 1)
-            chart_y.append(fx / M)
+            chart_y.append(fvax / M)
             
             # Criterio de aceptación: r2 <= f(x)/M
-            if r2 <= fx / M:
-                accepted_values.append(x)
+            if r2 <= fvax / M:
+                accepted_values.append(vax)
                 chart_accepted.append(True)
                 accepted_count += 1
             else:
@@ -99,6 +105,9 @@ class AcceptanceRejectionGenerator:
                 "x": chart_x,
                 "y": chart_y,
                 "r2": r2_values,
-                "accepted": chart_accepted
+                "accepted": chart_accepted,
+                "x_d": chart_x_d,
+                "y_d": chart_y_d,
+                "fx_d": chart_fx_d
             }
         }
