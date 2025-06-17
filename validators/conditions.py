@@ -105,7 +105,7 @@ class CongruentialValidator:
     def validate_all_conditions(self) -> List[Dict[str, Any]]:
         """Validar todas las condiciones aplicables"""
         conditions = [
-            self.validate_a_range_condition(),
+            #self.validate_a_range_condition(),
             self.validate_gcd_condition(),
             self.validate_prime_divisor_condition(),
             self.validate_four_divisor_condition()

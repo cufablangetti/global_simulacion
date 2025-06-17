@@ -29,6 +29,8 @@ class CongruentialGenerator(ABC):
             self.sequence.append(current)
             current = self.next_value(current)
         
+        normalized = [x / self.m for x in self.sequence]  # Números aleatorios en [0, 1)
+
         # Estadísticas
         stats = {
             "count": len(self.sequence),
@@ -39,7 +41,7 @@ class CongruentialGenerator(ABC):
             "stopped_reason": f"Se repitió el valor {current} (inicio de ciclo)"
         }
         
-        return self.sequence, stats
+        return self.sequence, normalized, stats
 
 class MixedCongruentialGenerator(CongruentialGenerator):
     """Generador congruencial mixto: X(n+1) = (a*X(n) + b) mod m"""

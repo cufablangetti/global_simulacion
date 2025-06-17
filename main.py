@@ -73,10 +73,11 @@ async def generate_numbers(request: GenerationRequest):
         else:
             raise HTTPException(status_code=400, detail="Método no válido")
         
-        numbers, stats = generator.generate()
+        numbers, normalized, stats = generator.generate()
         
         return {
             "numbers": numbers,
+            "normalizedNumbers": normalized,
             "statistics": stats
         }
         
