@@ -8,7 +8,7 @@ from generators.congruential import MixedCongruentialGenerator, MultiplicativeCo
 from generators.middle_squares import MiddleSquaresGenerator
 from validators.conditions import CongruentialValidator
 from validators.statistical_tests import ChiSquareTest, KolmogorovSmirnovTest
-from random_variables.acceptance_rejection import AcceptanceRejectionGenerator
+from random_variables.acceptance_rejection import HyperbolaFunction, CuadraticFunction, LinealFunction
 
 app = FastAPI(title="Pseudorandom Number Generator API", version="1.0.0")
 
@@ -38,7 +38,7 @@ class StatisticalTestRequest(BaseModel):
 class RandomVariableRequest(BaseModel):
     count: int
     method: str
-    distribution: str
+    fx: str
 
 @app.get("/health")
 async def health_check():
@@ -139,11 +139,21 @@ async def generate_random_variables(request: RandomVariableRequest):
         if request.method != "acceptance_rejection":
             raise HTTPException(status_code=400, detail="Método no válido")
         
-        generator = AcceptanceRejectionGenerator()
-        result = generator.generate_triangular(request.count)
+        if request.fx == "linear":
+            generator = LinealFunction()
+            result = generator.generate_triangular(request.count)
+            return result
         
-        return result
-        
+        elif request.fx == "cuadratic":
+            generator = CuadraticFunction()
+            result = generator.generate_triangular(request.count)
+            return result
+        elif request.fx == "hyperbola":
+            generator = HyperbolaFunction()
+            result = generator.generate_triangular(request.count)
+            return result
+        else:
+            raise HTTPException(status_code=400, detail="Función no válida")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
