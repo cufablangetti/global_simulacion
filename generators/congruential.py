@@ -29,7 +29,7 @@ class CongruentialGenerator(ABC):
             self.sequence.append(current)
             current = self.next_value(current)
         
-        normalized = [x / self.m for x in self.sequence]  # Números aleatorios en [0, 1)
+        normalized = [round(x / self.m, 3) for x in self.sequence]  # Números aleatorios en [0, 1)
 
         # Estadísticas
         stats = {

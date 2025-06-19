@@ -9,6 +9,7 @@ class MiddleSquaresGenerator:
         self.digits = digits
         self.sequence = []
         self.seen_values = set()
+        self.base = 10 ** self.digits
     
     def extract_middle_digits(self, squared: int) -> int:
         """Extraer los dígitos medios de un número"""
@@ -56,6 +57,8 @@ class MiddleSquaresGenerator:
         else:
             stopped_reason = "Generación completada"
         
+        normalized = [round(x / self.base, 3) for x in self.sequence]  # Números aleatorios en [0, 1)
+
         # Estadísticas
         stats = {
             "count": len(self.sequence),
@@ -65,4 +68,4 @@ class MiddleSquaresGenerator:
             "stopped_reason": stopped_reason
         }
         
-        return self.sequence, stats
+        return self.sequence, normalized, stats
