@@ -117,10 +117,9 @@ async def run_statistical_test(request: StatisticalTestRequest):
         numbers = request.numbers
         test_type = request.test_type
         params = request.parameters
-        
         if test_type == "chi_square":
             test = ChiSquareTest()
-            result = test.run_test(numbers, params["intervals"])
+            result = test.run_test(numbers, params["intervals"], params["chiSquareAlpha"])
         elif test_type == "kolmogorov_smirnov":
             test = KolmogorovSmirnovTest()
             result = test.run_test(numbers, params["significance_level"])
