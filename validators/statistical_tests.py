@@ -157,7 +157,7 @@ class KolmogorovSmirnovTest:
             if critical_value is None:  
                 critical_value = 1.36 / math.sqrt(n)  # Valor crítico aproximado para n grande
             # Resultado
-            passes = d_statistic <= critical_value
+            passes = max_d <= critical_value
             
             # Calcular p-valor aproximado usando la distribución de Kolmogorov
             
