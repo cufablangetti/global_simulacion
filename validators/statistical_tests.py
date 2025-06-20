@@ -103,46 +103,59 @@ class KolmogorovSmirnovTest:
     def __init__(self):
         # Valores críticos para diferentes niveles de significancia
         self.critical_coefficients = {
-            0.01: 1.628,
-            0.05: 1.36,
-            0.10: 1.22
+            0.01: [
+                0.995, 0.929, 0.829, 0.734, 0.669, 0.617, 0.576, 0.542, 0.513, 0.489,
+                0.468, 0.449, 0.432, 0.418, 0.404, 0.392, 0.381, 0.371, 0.361, 0.352,
+                0.344, 0.337, 0.33, 0.323, 0.317, 0.311, 0.305, 0.300, 0.295, 0.290,
+                0.285, 0.281, 0.277, 0.273, 0.269, 0.265, 0.262, 0.258, 0.255, 0.252
+            ]
+            ,
+            0.05: [
+                0.975, 0.842, 0.708, 0.624, 0.563, 0.519, 0.483, 0.454, 0.430, 0.409,
+                0.391, 0.375, 0.361, 0.349, 0.338, 0.327, 0.318, 0.309, 0.301, 0.294,
+                0.287, 0.281, 0.275, 0.269, 0.264, 0.259, 0.254, 0.250, 0.246, 0.242,
+                0.238, 0.234, 0.231, 0.227, 0.224, 0.221, 0.218, 0.215, 0.213, 0.210
+            ]
+            ,
+            0.10: [
+                0.950, 0.776, 0.636, 0.656, 0.509, 0.468, 0.436, 0.410, 0.387, 0.369,
+                0.352, 0.338, 0.325, 0.314, 0.304, 0.295, 0.286, 0.279, 0.271, 0.265,
+                0.259, 0.253, 0.247, 0.242, 0.238, 0.233, 0.229, 0.225, 0.221, 0.218,
+                0.214, 0.211, 0.208, 0.205, 0.202, 0.199, 0.196, 0.194, 0.191, 0.189
+            ]
         }
     
-    def run_test(self, numbers: List[float], significance_level: float = 0.05) -> Dict[str, Any]:
+    def run_test(self, y: List[float], significance_level: float = 0.05) -> Dict[str, Any]:
         """Ejecutar prueba Kolmogorov-Smirnov"""
         try:
-            # Normalizar números al rango [0, 1]
-            min_val = min(numbers)
-            max_val = max(numbers)
-            
+            if not y:
+                raise ValueError("La lista de datos está vacía")
+
+            min_val = min(y)
+            max_val = max(y)
+
             if min_val == max_val:
                 raise ValueError("Todos los números son iguales, no se puede realizar la prueba")
+
+            # Normalización al rango [0, 1]
+            y = [(x - min_val) / (max_val - min_val) for x in y]
+            y.sort()
+            n = len(y)
             
-            normalized = [(x - min_val) / (max_val - min_val) for x in numbers]
-            normalized.sort()
             
-            n = len(normalized)
-            
-            # Calcular D+ y D-
-            d_plus = 0
-            d_minus = 0
-            
-            for i, x in enumerate(normalized):
+            max_d = 0
+            for i, x in enumerate(y):
                 # Función de distribución empírica
-                f_empirical = (i + 1) / n
+                f = (i + 1) / n
                 # Función de distribución teórica (uniforme)
-                f_theoretical = x
+                max_d = max(max_d, abs(f - x))
                 
-                d_plus = max(d_plus, f_empirical - f_theoretical)
-                d_minus = max(d_minus, f_theoretical - f_empirical)
             
-            # Estadístico D
-            d_statistic = max(d_plus, d_minus)
             
             # Valor crítico
-            coefficient = self.critical_coefficients.get(significance_level, 1.36)
-            critical_value = coefficient / math.sqrt(n)
-            
+            critical_value = self.critical_coefficients.get(significance_level)[n - 1] if n - 1 < len(self.critical_coefficients[significance_level]) else None
+            if critical_value is None:  
+                critical_value = 1.36 / math.sqrt(n)  # Valor crítico aproximado para n grande
             # Resultado
             passes = d_statistic <= critical_value
             
@@ -152,7 +165,7 @@ class KolmogorovSmirnovTest:
             
             result = {
                 "test_name": "Kolmogorov-Smirnov",
-                "calculated_value": d_statistic,
+                "calculated_value": max_d,
                 "critical_value": critical_value,
                 "passes": passes,
                 "details": details
