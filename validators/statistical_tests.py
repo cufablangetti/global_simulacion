@@ -104,13 +104,20 @@ class KolmogorovSmirnovTest:
     def run_test(self, y: List[float], significance_level: float = 0.05) -> Dict[str, Any]:
         """Ejecutar prueba Kolmogorov-Smirnov"""
         try:
-            
+            if not y:
+                raise ValueError("La lista de datos está vacía")
+
+            min_val = min(y)
+            max_val = max(y)
+
+            if min_val == max_val:
+                raise ValueError("Todos los números son iguales, no se puede realizar la prueba")
+
+            # Normalización al rango [0, 1]
+            y = [(x - min_val) / (max_val - min_val) for x in y]
             y.sort()
             n = len(y)
             
-            # Calcular D+ y D-
-            d_plus = 0
-            d_minus = 0
             
             max_d = 0
             for i, x in enumerate(y):
@@ -119,7 +126,6 @@ class KolmogorovSmirnovTest:
                 # Función de distribución teórica (uniforme)
                 max_d = max(max_d, abs(f - x))
                 
-            
             
             
             # Valor crítico
