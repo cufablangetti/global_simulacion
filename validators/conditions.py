@@ -33,7 +33,7 @@ class CongruentialValidator:
         """Validar que gcd(b, m) = 1 para congruencial mixto"""
         if not self.is_mixed:
             return {
-                "name": "gcd(b, m) = 1",
+                "name": "mcd(b, m) = 1",
                 "description": "No aplica para método multiplicativo",
                 "satisfied": True,
                 "details": "Esta condición solo se evalúa en el método mixto"
@@ -43,10 +43,10 @@ class CongruentialValidator:
         satisfied = gcd_value == 1
         
         return {
-            "name": "gcd(b, m) = 1",
+            "name": "mcd(b, m) = 1",
             "description": "b y m deben ser primos entre sí",
             "satisfied": satisfied,
-            "details": f"gcd({self.b}, {self.m}) = {gcd_value}"
+            "details": f"mcd({self.b}, {self.m}) = {gcd_value}"
         }
     
     def validate_prime_divisor_condition(self) -> Dict[str, Any]:

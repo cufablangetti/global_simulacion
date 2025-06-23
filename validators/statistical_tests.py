@@ -7,15 +7,37 @@ class ChiSquareTest:
     
     def __init__(self):
         self.critical_values = {
-            # Grados de libertad: valor crítico (α = 0.05)
-            1: 3.841, 2: 5.991, 3: 7.815, 4: 9.488, 5: 11.070,
-            6: 12.592, 7: 14.067, 8: 15.507, 9: 16.919, 10: 18.307,
-            11: 19.675, 12: 21.026, 13: 22.362, 14: 23.685, 15: 24.996,
-            16: 26.296, 17: 27.587, 18: 28.869, 19: 30.144, 20: 31.410,
-            25: 37.652, 30: 43.773
+            # Grados de libertad
+            # α = 0.01 (99% confianza)
+            0.01: {
+                1: 6.635, 2: 9.210, 3: 11.345, 4: 13.277, 5: 15.086,
+                6: 16.812, 7: 18.475, 8: 20.090, 9: 21.666, 10: 23.209,
+                11: 24.725, 12: 26.217, 13: 27.688, 14: 29.141, 15: 30.578,
+                16: 32.000, 17: 33.409, 18: 34.805, 19: 36.191, 20: 37.566,
+                21: 38.932, 22: 40.289, 23: 41.638, 24: 42.980, 25: 44.314,
+                26: 45.642, 27: 46.963, 28: 48.278, 29: 49.588, 30: 50.892
+            },
+            # α = 0.05 (95% confianza)
+            0.05: {
+                1: 3.841, 2: 5.991, 3: 7.815, 4: 9.488, 5: 11.070,
+                6: 12.592, 7: 14.067, 8: 15.507, 9: 16.919, 10: 18.307,
+                11: 19.675, 12: 21.026, 13: 22.362, 14: 23.685, 15: 24.996,
+                16: 26.296, 17: 27.587, 18: 28.869, 19: 30.144, 20: 31.410,
+                21: 32.671, 22: 33.924, 23: 35.172, 24: 36.415, 25: 37.652,
+                26: 38.885, 27: 40.113, 28: 41.337, 29: 42.557, 30: 43.773
+            },
+            # α = 0.10 (90% confianza)
+            0.10: {
+                1: 2.706, 2: 4.605, 3: 6.251, 4: 7.779, 5: 9.236,
+                6: 10.645, 7: 12.017, 8: 13.362, 9: 14.684, 10: 15.987,
+                11: 17.275, 12: 18.549, 13: 19.812, 14: 21.064, 15: 22.307,
+                16: 23.542, 17: 24.769, 18: 25.989, 19: 27.204, 20: 28.412,
+                21: 29.615, 22: 30.813, 23: 32.007, 24: 33.196, 25: 34.382,
+                26: 35.563, 27: 36.741, 28: 37.916, 29: 39.087, 30: 40.256
+            }
         }
     
-    def run_test(self, numbers: List[float], intervals: int) -> Dict[str, Any]:
+    def run_test(self, numbers: List[float], intervals: int, significance_level: float) -> Dict[str, Any]:
         """Ejecutar prueba Chi-cuadrado"""
         try:
             # Normalizar números al rango [0, 1] si es necesario
@@ -49,10 +71,12 @@ class ChiSquareTest:
             degrees_of_freedom = intervals - 1
             
             # Valor crítico
-            critical_value = self.critical_values.get(degrees_of_freedom)
-            if critical_value is None:
-                # Usar distribución chi-cuadrado para grados de libertad no tabulados
-                critical_value = stats.chi2.ppf(0.95, degrees_of_freedom)
+            criticals_for_alpha = self.critical_values.get(significance_level)
+            if criticals_for_alpha and degrees_of_freedom in criticals_for_alpha:
+                critical_value = criticals_for_alpha[degrees_of_freedom]
+            else:
+                # fallback: cálculo dinámico si no está en la tabla
+                critical_value = stats.chi2.ppf(1 - significance_level, degrees_of_freedom)
             
             # Resultado
             passes = chi_square <= critical_value
@@ -133,7 +157,9 @@ class KolmogorovSmirnovTest:
                 critical_value = 1.36 / math.sqrt(n)  # Valor crítico aproximado para n grande
             # Resultado
             passes = max_d <= critical_value
-                        
+            
+            # Calcular p-valor aproximado usando la distribución de Kolmogorov
+            
             details = f"n = {n}, α = {significance_level}"
             
             result = {
