@@ -33,9 +33,9 @@ class AcceptanceRejectionGenerator(ABC):
             points_y.append(y)
         return points_x, points_y
 
-    def generate_triangular(self, count: int) -> Dict[str, Any]:
+    def generate(self, count: int) -> Dict[str, Any]:
         """
-        Generar variables aleatorias con densidad f(x) = 2x usando aceptación-rechazo
+        Generar variables aleatorias con densidad f(x) usando aceptación-rechazo
         
         Args:
             count: Número de valores a generar

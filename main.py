@@ -140,16 +140,16 @@ async def generate_random_variables(request: RandomVariableRequest):
         
         if request.fx == "linear":
             generator = LinealFunction()
-            result = generator.generate_triangular(request.count)
+            result = generator.generate(request.count)
             return result
         
         elif request.fx == "cuadratic":
             generator = CuadraticFunction()
-            result = generator.generate_triangular(request.count)
+            result = generator.generate(request.count)
             return result
         elif request.fx == "hyperbola":
             generator = HyperbolaFunction()
-            result = generator.generate_triangular(request.count)
+            result = generator.generate(request.count)
             return result
         else:
             raise HTTPException(status_code=400, detail="Función no válida")
