@@ -2,7 +2,7 @@ import math
 from typing import List, Dict, Any
 
 class CongruentialValidator:
-    """Validador de condiciones teóricas para generadores congruenciales"""
+    # Validador de condiciones teóricas para generadores congruenciales
     
     def __init__(self, a: int, b: int, m: int, is_mixed: bool = True):
         self.a = a
@@ -11,13 +11,13 @@ class CongruentialValidator:
         self.is_mixed = is_mixed
     
     def gcd(self, a: int, b: int) -> int:
-        """Calcular máximo común divisor"""
+        # Calcular máximo común divisor
         while b:
             a, b = b, a % b
         return a
     
     def get_prime_factors(self, n: int) -> List[int]:
-        """Obtener factores primos de un número"""
+        # Obtener factores primos de un número
         factors = []
         d = 2
         while d * d <= n:
@@ -30,7 +30,7 @@ class CongruentialValidator:
         return list(set(factors))  # Eliminar duplicados
     
     def validate_gcd_condition(self) -> Dict[str, Any]:
-        """Validar que gcd(b, m) = 1 para congruencial mixto"""
+        # Validar que gcd(b, m) = 1 para congruencial mixto
         if not self.is_mixed:
             return {
                 "name": "mcd(b, m) = 1",
@@ -50,7 +50,7 @@ class CongruentialValidator:
         }
     
     def validate_prime_divisor_condition(self) -> Dict[str, Any]:
-        """Si q es un divisor primo de m, entonces q divide a (a-1)"""
+        # Si q es un divisor primo de m, entonces q divide a (a-1)
         prime_factors = self.get_prime_factors(self.m)
         satisfied = True
         failing_primes = []
@@ -73,7 +73,7 @@ class CongruentialValidator:
         }
     
     def validate_four_divisor_condition(self) -> Dict[str, Any]:
-        """Si 4 divide a m, entonces 4 debe dividir a (a-1)"""
+        # Si 4 divide a m, entonces 4 debe dividir a (a-1)
         if self.m % 4 != 0:
             return {
                 "name": "Condición del 4",
@@ -92,7 +92,7 @@ class CongruentialValidator:
         }
     
     def validate_a_range_condition(self) -> Dict[str, Any]:
-        """Validar que 1 < a < m"""
+        # Validar que 1 < a < m
         satisfied = 1 < self.a < self.m
         
         return {
@@ -103,7 +103,7 @@ class CongruentialValidator:
         }
     
     def validate_all_conditions(self) -> List[Dict[str, Any]]:
-        """Validar todas las condiciones aplicables"""
+        # Validar todas las condiciones aplicables
         conditions = [
             #self.validate_a_range_condition(),
             self.validate_gcd_condition(),
@@ -114,7 +114,7 @@ class CongruentialValidator:
         return conditions
     
     def get_explanation(self) -> str:
-        """Obtener explicación del resultado de validación"""
+        # Obtener explicación del resultado de validación
         conditions = self.validate_all_conditions()
         satisfied_count = sum(1 for c in conditions if c["satisfied"])
         total_conditions = len([c for c in conditions if "No aplica" not in c["description"]])
