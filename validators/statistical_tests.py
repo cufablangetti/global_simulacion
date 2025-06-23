@@ -1,7 +1,6 @@
 import math
 from typing import List, Dict, Any
 from scipy import stats
-import numpy as np
 
 class ChiSquareTest:
     """Prueba de bondad de ajuste Chi-cuadrado"""
