@@ -1,7 +1,125 @@
 from abc import ABC, abstractmethod
 import random
-import math
+from sympy import symbols, sympify, lambdify, Interval
+from sympy.calculus.util import maximum
 from typing import List, Dict, Any, Tuple
+
+
+class AcceptanceRejectionGeneratorV2:
+    """Generador de variables aleatorias usando método de aceptación-rechazo"""
+    
+    def __init__(self, a, b, M, f, function_name: str):
+        random.seed()  # Usar semilla basada en tiempo
+        self.a = a
+        self.b = b
+        self.M = M
+        x_sym = symbols('x')
+        self.f = lambdify(x_sym, sympify(f), 'math')  
+        self.function_name = function_name
+
+  
+    def target_density(self, x: float) -> float:
+        """Función de densidad objetivo f(x)"""
+        return self.f(x) if self.a <= x <= self.b else 0
+
+    def get_function_name(self) -> str:
+        """Obtener el nombre de la función de densidad objetivo f(x)"""
+        return self.function_name
+    
+    def generate_function_points(self):
+        """Generar puntos para la función de densidad f(x)"""
+        points_x = []
+        points_y = []
+        for i in range(100):
+            x = i / 100 *(self.b - self.a) + self.a  # Escalar x entre a y b
+            y = self.target_density(x)
+            points_x.append(x)
+            points_y.append(y)
+        return points_x, points_y
+
+    def generate(self, count: int) -> Dict[str, Any]:
+        """
+        Generar variables aleatorias con densidad f(x) usando aceptación-rechazo
+        
+        Args:
+            count: Número de valores a generar
+            
+        Returns:
+            Diccionario con los resultados
+        """
+        # La constante M debe satisfacer f(x) <= M * g(x) para todo x
+        # Para f(x) = 2x y g(x) = 1, tenemos M = 2 (máximo de f(x) en [0,1])
+        
+        
+        r1_values = []  # Números aleatorios para x
+        r2_values = []  # Números aleatorios para y
+        accepted_values = []
+        chart_x = []
+        chart_y = []
+        chart_accepted = []
+        
+        chart_x_d = []
+        chart_y_d = []
+        points_x_d, points_fx_d = self.generate_function_points()
+        accepted_count = 0
+        
+        
+        # Generar hasta obtener 'count' valores aceptados
+        for i in range(count):
+            # Generar x de la distribución auxiliar
+            r1 = random.random() 
+            r1_values.append(r1)
+
+            r2 = random.random()
+            r2_values.append(r2)
+            
+            vax = (self.a) + (self.b - self.a) * r1  
+            
+
+            fvax = self.target_density(vax)
+            
+            
+            chart_x_d.append(vax)
+            chart_y_d.append(r2 * self.M)
+            
+            # Datos para el gráfico
+            chart_x.append(i + 1)
+            chart_y.append(fvax / self.M)
+
+            # Criterio de aceptación: r2 <= f(x)/M
+            if r2 <= fvax / self.M:
+                accepted_values.append(vax)
+                chart_accepted.append(True)
+                accepted_count += 1
+            else:
+                chart_accepted.append(False)
+            
+        
+        
+        # Calcular tasa de aceptación
+        acceptance_rate = accepted_count / count if count > 0 else 0
+        
+        return {
+            "r1": r1_values,
+            "r2": r2_values,
+            "generated_values": accepted_values,
+            "acceptance_rate": acceptance_rate,
+            "chart_data": {
+                "function_name": self.get_function_name(),
+                "x": chart_x,
+                "y": chart_y,
+                "r2": r2_values,
+                "accepted": chart_accepted,
+                "x_d": chart_x_d,
+                "y_d": chart_y_d,
+                "points_fx_d": points_fx_d,
+                "points_x_d": points_x_d,
+                "a": self.a,
+                "b": self.b,
+                "M": self.M
+            }
+        }
+
 
 class AcceptanceRejectionGenerator(ABC):
     """Generador de variables aleatorias usando método de aceptación-rechazo"""

@@ -8,7 +8,7 @@ from generators.congruential import MixedCongruentialGenerator, MultiplicativeCo
 from generators.middle_squares import MiddleSquaresGenerator
 from validators.conditions import CongruentialValidator
 from validators.statistical_tests import ChiSquareTest, KolmogorovSmirnovTest
-from random_variables.acceptance_rejection import HyperbolaFunction, CuadraticFunction, LinealFunction
+from random_variables.acceptance_rejection import HyperbolaFunction, CuadraticFunction, LinealFunction, AcceptanceRejectionGeneratorV2
 
 app = FastAPI(title="Pseudorandom Number Generator API", version="1.0.0")
 
@@ -39,6 +39,14 @@ class RandomVariableRequest(BaseModel):
     count: int
     method: str
     fx: str
+    
+class RandomVariableRequestV2(BaseModel):
+    count: int
+    a: float
+    b: float
+    M: float
+    function_name: str
+    f: str
 
 @app.get("/health")
 async def health_check():
@@ -156,5 +164,21 @@ async def generate_random_variables(request: RandomVariableRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/random-variablesV2")
+async def generate_random_variablesV2(request: RandomVariableRequestV2):
+    """Generar variables aleatorias usando método de aceptación-rechazo"""
+    try:
+        print(f"Received request: {request}")
+        genereador = AcceptanceRejectionGeneratorV2(
+            a=request.a,
+            b=request.b,
+            M=request.M,
+            f=request.f,
+            function_name=request.function_name
+        )
+        result = genereador.generate(request.count)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
