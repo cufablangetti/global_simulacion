@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import random
 from sympy import symbols, sympify, lambdify, Interval
-from sympy.calculus.util import maximum
+from sympy.calculus.util import maximum, minimum
 from typing import List, Dict, Any, Tuple
 
 
@@ -18,6 +18,9 @@ class AcceptanceRejectionGeneratorV2:
         f_expr = sympify(f)
         self.f = lambdify(x_sym, f_expr, 'math')  # función evaluable en Python
         self.M = float(maximum(f_expr, x_sym, Interval(a, b)))
+        
+        if float(minimum(f_expr, x_sym, Interval(a, b))) < 0:
+            raise ValueError("La función debe ser no negativa en el intervalo [a, b]")
 
         self.function_name = function_name
 
