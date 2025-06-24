@@ -9,12 +9,16 @@ class AcceptanceRejectionGeneratorV2:
     """Generador de variables aleatorias usando método de aceptación-rechazo"""
     
     def __init__(self, a, b, M, f, function_name: str):
-        random.seed()  # Usar semilla basada en tiempo
+        random.seed()  # Semilla basada en tiempo
         self.a = a
         self.b = b
-        self.M = M
         x_sym = symbols('x')
-        self.f = lambdify(x_sym, sympify(f), 'math')  
+
+        # Convertir string a expresión simbólica
+        f_expr = sympify(f)
+        self.f = lambdify(x_sym, f_expr, 'math')  # función evaluable en Python
+        self.M = float(maximum(f_expr, x_sym, Interval(a, b)))
+
         self.function_name = function_name
 
   
