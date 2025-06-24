@@ -109,6 +109,7 @@ class AcceptanceRejectionGeneratorV2:
         return {
             "r1": r1_values,
             "r2": r2_values,
+            "M": self.M,
             "generated_values": accepted_values,
             "acceptance_rate": acceptance_rate,
             "chart_data": {
